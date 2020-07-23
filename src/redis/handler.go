@@ -47,9 +47,10 @@ func (h *Handler) Handler(ctx context.Context, conn net.Conn) {
 	h.activeConn.Store(client, 1)
 
 	reader := bufio.NewReader(conn)
-
+	//下一个完整包的长度
 	var fixLen int64 = 0
 	var err error
+	//本次读取的数据
 	var msg []byte
 	for {
 		if fixLen == 0 {
@@ -69,6 +70,7 @@ func (h *Handler) Handler(ctx context.Context, conn net.Conn) {
 				_, _ = client.conn.Write(errReply.ToBytes())
 			}
 		} else {
+			//需要读取下一个完整的包+CRLF的长度
 			msg := make([]byte, fixLen+2)
 			_, err = io.ReadFull(reader, msg)
 			if err != nil {
@@ -90,7 +92,7 @@ func (h *Handler) Handler(ctx context.Context, conn net.Conn) {
 		if !client.uploading.Get() {
 			//数组类型 * 开头
 			if msg[0] == '*' {
-				//获取该数组包含了多少个元素 放到 expectedLine 中
+				//获取该数组预期包含了多少个元素 放到 expectedLine 中
 				expectedLine, err := strconv.ParseUint(string(msg[1:len(msg)-2]), 10, 32)
 				if err != nil {
 					_, _ = client.conn.Write(UnKnowErrReplyBytes)
@@ -120,10 +122,11 @@ func (h *Handler) Handler(ctx context.Context, conn net.Conn) {
 				//返回给客户端结果
 			}
 		} else {
-			//获取第一行元素
+			//此时已经确定是数组的类型
 			line := msg[0 : len(msg)-2]
+			//看一下该数组的元素是不是大字符串的类型
 			if line[0] == '$' {
-				//大写字符串类型
+				//大写字符串类型 查看该大字符串类型的长度为多少 下次应该读取该长度的数据
 				fixLen, err = strconv.ParseInt(string(line[1:]), 10, 64)
 				if err != nil {
 					errReply := &reply.ProtocolErrReply{Msg: err.Error()}
@@ -135,6 +138,7 @@ func (h *Handler) Handler(ctx context.Context, conn net.Conn) {
 				}
 
 			} else {
+				//不是大字符串就是整型或者简单字符串等类型
 				client.args[client.receivedCount] = line
 				client.receivedCount++
 			}
@@ -144,8 +148,9 @@ func (h *Handler) Handler(ctx context.Context, conn net.Conn) {
 				client.uploading.Set(false)
 				//TODO 发送给数据库执行并返回结果
 
-				//计数器清0 等待下次接收
+				//本次需要接受的包长清零
 				client.expectedArgsCount = 0
+				//计数器清零
 				client.receivedCount = 0
 				client.args = nil
 				client.waitingReplay.Done()

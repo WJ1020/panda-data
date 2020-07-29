@@ -24,7 +24,7 @@ type Handler struct {
 
 func MakeHandler() *Handler {
 	return &Handler{
-		//TODO 初始化一个数据库
+		db: db.MakeDB(),
 	}
 }
 func (h *Handler) closeClient(client *Client) {
@@ -118,6 +118,8 @@ func (h *Handler) Handler(ctx context.Context, conn net.Conn) {
 					args[index] = []byte(s)
 				}
 				//TODO 发送给数据库执行 并且返回结果
+
+				h.db.Exec(client, args)
 
 				//返回给客户端结果
 			}

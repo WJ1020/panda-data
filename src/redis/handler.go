@@ -3,7 +3,8 @@ package handler
 import (
 	"bufio"
 	"context"
-	"godis/src/db"
+	DBImpl "godis/src/db"
+	"godis/src/interface/db"
 	"godis/src/lib/logger"
 	"godis/src/lib/sync/atomic"
 	"godis/src/redis/reply"
@@ -24,7 +25,7 @@ type Handler struct {
 
 func MakeHandler() *Handler {
 	return &Handler{
-		db: db.MakeDB(),
+		db: DBImpl.MakeDB(),
 	}
 }
 func (h *Handler) closeClient(client *Client) {
@@ -161,4 +162,8 @@ func (h *Handler) Handler(ctx context.Context, conn net.Conn) {
 		}
 
 	}
+}
+func (h *Handler) Close() error {
+
+	return nil
 }

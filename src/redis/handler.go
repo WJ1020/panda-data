@@ -15,7 +15,7 @@ import (
 	"sync"
 )
 
-var UnKnowErrReplyBytes = []byte("-ERR un know\r\n")
+var UnKnowErrReplyBytes = []byte("-ERR un know bytes\r\n")
 
 type Handler struct {
 	activeConn sync.Map
@@ -36,6 +36,7 @@ func (h *Handler) closeClient(client *Client) {
 }
 
 /**
+*2\r\n$4\r\nLLEN\r\n$6\r\nmylist
 用来解析redis协议
 */
 func (h *Handler) Handler(ctx context.Context, conn net.Conn) {
@@ -72,7 +73,7 @@ func (h *Handler) Handler(ctx context.Context, conn net.Conn) {
 			}
 		} else {
 			//需要读取下一个完整的包+CRLF的长度
-			msg := make([]byte, fixLen+2)
+			msg = make([]byte, fixLen+2)
 			_, err = io.ReadFull(reader, msg)
 			if err != nil {
 				if err == io.EOF || err == io.ErrUnexpectedEOF {
@@ -120,9 +121,13 @@ func (h *Handler) Handler(ctx context.Context, conn net.Conn) {
 				}
 				//TODO 发送给数据库执行 并且返回结果
 
-				h.db.Exec(client, args)
-
+				result := h.db.Exec(client, args)
 				//返回给客户端结果
+				if result != nil {
+					_ = client.Write(result.ToBytes())
+				} else {
+					_ = client.Write(UnKnowErrReplyBytes)
+				}
 			}
 		} else {
 			//此时已经确定是数组的类型
@@ -133,10 +138,12 @@ func (h *Handler) Handler(ctx context.Context, conn net.Conn) {
 				fixLen, err = strconv.ParseInt(string(line[1:]), 10, 64)
 				if err != nil {
 					errReply := &reply.ProtocolErrReply{Msg: err.Error()}
+					logger.Info("读取数据出现错误")
 					_, _ = client.conn.Write(errReply.ToBytes())
 				}
 				if fixLen <= 0 {
 					errReply := &reply.ProtocolErrReply{Msg: "无效的包长度"}
+					logger.Info("无效的包长度")
 					_, _ = client.conn.Write(errReply.ToBytes())
 				}
 
@@ -149,7 +156,12 @@ func (h *Handler) Handler(ctx context.Context, conn net.Conn) {
 			//查看是否已经接收完成
 			if client.receivedCount == client.expectedArgsCount {
 				client.uploading.Set(false)
-				//TODO 发送给数据库执行并返回结果
+				result := h.db.Exec(client, client.args)
+				if result != nil {
+					_ = client.Write(result.ToBytes())
+				} else {
+					_ = client.Write(UnKnowErrReplyBytes)
+				}
 
 				//本次需要接受的包长清零
 				client.expectedArgsCount = 0

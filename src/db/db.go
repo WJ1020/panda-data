@@ -2,7 +2,7 @@ package db
 
 import (
 	"godis/src/interface/redis"
-	"godis/src/lib/logger"
+	"godis/src/redis/reply"
 	"godis/src/structure/dict"
 	"strings"
 )
@@ -21,9 +21,20 @@ func MakeDB() *DB {
 	}
 	return db
 }
-func (db *DB) Exec(c redis.Client, args [][]byte) redis.Reply {
+
+type CmdFunc func(db *DB, args [][]byte) redis.Reply
+
+func (db *DB) Exec(c redis.Client, args [][]byte) (result redis.Reply) {
 	cmd := strings.ToLower(string(args[0]))
-	//执行的命令为
-	logger.Info("comment:" + cmd)
-	return nil
+	cmdFunc, ok := resolverCmd(cmd)
+	if !ok {
+		//该命令暂时不支持
+		return reply.MakeErrRelay("ERR unknown command: " + cmd)
+	}
+	if len(args) > 1 {
+		result = cmdFunc(db, args[1:])
+	} else {
+		result = cmdFunc(db, [][]byte{})
+	}
+	return
 }

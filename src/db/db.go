@@ -11,6 +11,10 @@ const (
 	dataDictSize = 1 << 16
 )
 
+type DataEntity struct {
+	Data interface{}
+}
+
 type DB struct {
 	Data dict.Dict
 }

@@ -11,18 +11,6 @@ var (
 type BulkReply struct {
 	Arg []byte
 }
-type OkReply struct {
-	Arg []byte
-}
-
-func MakeOkReply() *OkReply {
-	return &OkReply{
-		Arg: []byte(OK),
-	}
-}
-func (o *OkReply) ToBytes() []byte {
-	return o.Arg
-}
 
 func MakeBulkReply(arg []byte) *BulkReply {
 	return &BulkReply{

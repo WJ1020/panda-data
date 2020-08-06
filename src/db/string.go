@@ -7,6 +7,6 @@ import (
 
 func Set(db *DB, args [][]byte) redis.Reply {
 
-	return reply.MakeOkReply()
+	return &reply.OkReply{}
 
 }

@@ -4,11 +4,11 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"godis/src/lib/sync/atomic"
-	"godis/src/lib/sync/wait"
 	"io"
 	"log"
 	"net"
+	"panda-data/src/lib/sync/atomic"
+	"panda-data/src/lib/sync/wait"
 	"sync"
 	"time"
 )

@@ -1,7 +1,7 @@
 package db
 
 import (
-	"godis/src/interface/redis"
+	"panda-data/src/interface/redis"
 )
 
 type DB interface {

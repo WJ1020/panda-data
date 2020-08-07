@@ -1,8 +1,8 @@
 package main
 
 import (
-	handler "godis/src/redis"
-	"godis/src/server"
+	handler "panda-data/src/redis"
+	"panda-data/src/server"
 	"time"
 )
 

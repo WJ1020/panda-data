@@ -1,8 +1,8 @@
 package db
 
 import (
-	"godis/src/interface/redis"
-	"godis/src/redis/reply"
+	"panda-data/src/interface/redis"
+	"panda-data/src/redis/reply"
 )
 
 func Set(db *DB, args [][]byte) redis.Reply {

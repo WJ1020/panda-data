@@ -1,9 +1,9 @@
 package db
 
 import (
-	"godis/src/interface/redis"
-	"godis/src/redis/reply"
-	"godis/src/structure/dict"
+	"panda-data/src/interface/redis"
+	"panda-data/src/redis/reply"
+	"panda-data/src/structure/dict"
 	"strings"
 )
 

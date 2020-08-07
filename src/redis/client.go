@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"godis/src/lib/sync/atomic"
-	"godis/src/lib/sync/wait"
 	"net"
+	"panda-data/src/lib/sync/atomic"
+	"panda-data/src/lib/sync/wait"
 	"sync"
 	"time"
 )

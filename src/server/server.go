@@ -3,12 +3,12 @@ package server
 import (
 	"context"
 	"fmt"
-	"godis/src/interface/tcp"
-	"godis/src/lib/logger"
-	"godis/src/lib/sync/atomic"
 	"net"
 	"os"
 	"os/signal"
+	"panda-data/src/interface/tcp"
+	"panda-data/src/lib/logger"
+	"panda-data/src/lib/sync/atomic"
 	"syscall"
 	"time"
 )

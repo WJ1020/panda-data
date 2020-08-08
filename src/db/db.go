@@ -5,6 +5,7 @@ import (
 	"panda-data/src/redis/reply"
 	"panda-data/src/structure/dict"
 	"strings"
+	"sync"
 )
 
 const (
@@ -17,6 +18,8 @@ type DataEntity struct {
 
 type DB struct {
 	Data dict.Dict
+
+	countDownLatch sync.WaitGroup
 }
 
 func MakeDB() *DB {
@@ -41,4 +44,9 @@ func (db *DB) Exec(c redis.Client, args [][]byte) (result redis.Reply) {
 		result = cmdFunc(db, [][]byte{})
 	}
 	return
+}
+
+func (db *DB) Put(key string, val *DataEntity) int {
+	db.countDownLatch.Wait()
+	return db.Data.Put(key, val)
 }

@@ -88,3 +88,24 @@ func Set(db *DB, args [][]byte) redis.Reply {
 	return &reply.OkReply{}
 
 }
+
+func GetByStringKey(db *DB, key string) ([]byte, reply.ErrorReply) {
+
+	entity, ok := db.Get(key)
+
+	if !ok {
+		return nil, nil
+	}
+	bytes, ok := entity.Data.([]byte)
+	if !ok {
+		return nil, &reply.WrongTypeErrReply{}
+	}
+
+	return bytes, nil
+
+}
+
+func Get(db *DB, args [][]byte) redis.Reply {
+
+	return nil
+}

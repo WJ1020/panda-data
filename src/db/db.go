@@ -50,3 +50,15 @@ func (db *DB) Put(key string, val *DataEntity) int {
 	db.countDownLatch.Wait()
 	return db.Data.Put(key, val)
 }
+
+func (db *DB) Get(key string) (*DataEntity, bool) {
+	db.countDownLatch.Wait()
+	raw, ok := db.Data.Get(key)
+	if !ok {
+		return nil, false
+	}
+	//TODO 判断key是否已经过期
+	//interface可以通过这种方式强制转换
+	res, _ := raw.(*DataEntity)
+	return res, true
+}

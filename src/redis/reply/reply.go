@@ -5,7 +5,6 @@ import "strconv"
 var (
 	nullBulkReplyBytes = []byte("$-1")
 	CRLF               = "\r\n"
-	OK                 = "+OK" + CRLF
 )
 
 type BulkReply struct {
@@ -73,7 +72,6 @@ func (r *IntReply) ToBytes() []byte {
 }
 
 type ErrorReply interface {
-	Error() string
 	ToBytes() []byte
 }
 

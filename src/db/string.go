@@ -89,7 +89,7 @@ func Set(db *DB, args [][]byte) redis.Reply {
 
 }
 
-func GetByStringKey(db *DB, key string) ([]byte, reply.ErrorReply) {
+func (db *DB) GetByStringKey(key string) ([]byte, reply.ErrorReply) {
 
 	entity, ok := db.Get(key)
 
@@ -106,6 +106,16 @@ func GetByStringKey(db *DB, key string) ([]byte, reply.ErrorReply) {
 }
 
 func Get(db *DB, args [][]byte) redis.Reply {
-
-	return nil
+	if len(args) != 1 {
+		return reply.MakeErrRelay("Error number wrong get")
+	}
+	key := string(args[0])
+	bytes, err := db.GetByStringKey(key)
+	if err != nil {
+		return err
+	}
+	if bytes == nil {
+		return &reply.NullBulkReply{}
+	}
+	return reply.MakeBulkReply(bytes)
 }

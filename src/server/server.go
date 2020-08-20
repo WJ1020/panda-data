@@ -40,7 +40,9 @@ func ListenAndServer(cfg *Config, handler tcp.Handler) {
 	logger.Info(fmt.Sprintf("start lisrening bind: %s", cfg.Address))
 	defer func() {
 		err1 := handler.Close()
-		logger.Info(err1)
+		if err1 != nil {
+			logger.Info(err1)
+		}
 	}()
 	defer listener.Close()
 

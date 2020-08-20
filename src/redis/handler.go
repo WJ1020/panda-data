@@ -119,8 +119,6 @@ func (h *Handler) Handler(ctx context.Context, conn net.Conn) {
 				for index, s := range strs {
 					args[index] = []byte(s)
 				}
-				//TODO 发送给数据库执行 并且返回结果
-
 				result := h.db.Exec(client, args)
 				//返回给客户端结果
 				if result != nil {

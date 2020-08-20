@@ -21,7 +21,7 @@ func Set(db *DB, args [][]byte) redis.Reply {
 
 	key := string(args[0])
 
-	value := string(args[1])
+	value := args[1]
 
 	policy := DEF
 

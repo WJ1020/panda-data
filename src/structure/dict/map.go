@@ -123,6 +123,26 @@ func (dict *ConcurrentMap) Put(key string, val interface{}) (res int) {
 		return 1
 	}
 }
+func (dict *ConcurrentMap) Remove(key string) (res int) {
+	if dict == nil {
+		panic("dict is nil")
+	}
+	//获取哈希值
+	hashCode := fnv32(key)
+	//判断槽位index
+	index := dict.spread(hashCode)
+	//获取具体的分片
+	shard := dict.getShard(index)
+	//加锁
+	shard.mutex.Lock()
+	defer shard.mutex.Unlock()
+	if _, ok := shard.m[key]; ok {
+		delete(shard.m, key)
+		return 1
+	} else {
+		return 0
+	}
+}
 
 func (dict *ConcurrentMap) addCount() int32 {
 	return atomic.AddInt32(&dict.count, 1)

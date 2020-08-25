@@ -23,7 +23,7 @@ func Select(db *DB, args [][]byte) redis.Reply {
 	if v < 3 {
 		return &reply.OkReply{}
 	} else {
-		return reply.MakeErrRelay("Error")
+		return reply.MakeErrRelay("Index of ")
 	}
 
 }

@@ -62,3 +62,8 @@ func (db *DB) Get(key string) (*DataEntity, bool) {
 	res, _ := raw.(*DataEntity)
 	return res, true
 }
+
+func (db *DB) Remove(key string) {
+	db.countDownLatch.Wait()
+	db.Data.Remove(key)
+}
